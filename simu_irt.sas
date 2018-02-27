@@ -80,17 +80,13 @@ options nomprint nomlogic nosymbolgen nonotes nostimer;
 data _null_;
 	set &par_file end=last;
 	array steps (5) step1-step5;
-
-call symput('item'||trim(left(put(item_no,4.))), name);
-call symput('itch'||trim(left(put(item_no,4.))), left(choices));
-call symput('itsl'||trim(left(put(item_no,4.))), left(slope));
-  do i=1 TO 5;
-    call symput ('st'||trim(left(put(item_no,4.)))||'_'||left(i),
-                                                left(steps(i)));
-  end;
-
-if last then
-    call symput('nitems', trim(left(put(item_no,4.))));
+	call symput('item'||trim(left(put(item_no,4.))), name);
+	call symput('itch'||trim(left(put(item_no,4.))), left(choices));
+	call symput('itsl'||trim(left(put(item_no,4.))), left(slope));
+  	do i=1 TO 5;
+    		call symput ('st'||trim(left(put(item_no,4.)))||'_'||left(i),left(steps(i)));
+  	end;
+	if last then call symput('nitems', trim(left(put(item_no,4.))));
 run;
 
 * generate theta;
@@ -110,7 +106,7 @@ data &outfile (
 	set &outfile;
 	%do _j=1 %to &nitems;
 		* GPCM;
-		%if %upcase(%left(%trim(&model)))= GPCM %then %do;
+		%if %upcase(%left(%trim(&model)))=GPCM %then %do;
 			divisor=1;
 			do i=1 to (symget("itch&_j")-1);
 				sum=0;
@@ -135,7 +131,7 @@ data &outfile (
 			end;
 		%end;
 		* GRM;
-		%else %do;
+		%if %upcase(%left(%trim(&model)))=GRM %then %do;
 			array icca&_j (*) icc1-icc&&itch&_j;
 			array ciccb&_j (*) cicc1-cicc&&itch&_j;
 			do i=symget("itch&_j") to 1 by -1;
